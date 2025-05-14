@@ -48,7 +48,7 @@ https://en.wikipedia.org/wiki/Eight-hour_day_movement
 “What Does It Mean to Unionize When You’re Your Own Boss?”
 https://eyeondesign.aiga.org/what-does-it-mean-to-unionize-when-youre-your-own-boss/
 
-The Young Karl Marx movie trailer (come for the trailer, stay for ads...)
+The Young Karl Marx movie trailer (come for the orchestrated biopic, stay for the personalised ads...)
 https://www.youtube.com/watch?v=hVTDoZLssg8
 
 Guild entry - Wikipedia
