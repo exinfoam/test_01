@@ -28,8 +28,7 @@ function setValue(idTag, x) {
 function buildTable(columnHeader) {
   // return an empty P5 table with headers but no data
   let t = new p5.Table();
-  let c;
-  for (c = 0; c < columnHeader.length; c += 1) {
+  for (let c = 0; c < columnHeader.length; c++) {
     t.addColumn(columnHeader[c]);
   }
   return t;
@@ -61,10 +60,8 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
   for (let r = 0; r < rc; r++) {
     rh += "<tr>";
     for (let c = 0; c < cc; c++) {
-
-      // add the content of each cell, with URLs converted to clickable links
       let cell = tbl.get(r, c);
-      let cellContent = linkify(cell); // 🔗 <-- NEW: Convert URLs to anchor tags
+      let cellContent = formatCellContent(cell); // Apply formatting (link or image)
       rh += "<td>" + cellContent + "</td>";
     }
     rh += "</tr>";
@@ -72,15 +69,21 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
 
   // create and insert the HTML table element
   let t = createElement('table', hh + rh);
-
   t.addClass(classID); // add the table class from w3.css
-  t.id(tableID); // sets the id for this <table>
-  // t.parent(parentID); // you can uncomment this if you want to attach the table to a specific element
+  t.id(tableID);       // sets the id for this <table>
+  // t.parent(parentID); // optional: attach to a specific parent element
 }
 
-// 🔗 NEW: Converts plain text URLs into clickable anchor links
-function linkify(text) {
-  // regex matches URLs that start with http or https
+// 🔗🖼️ Format cell content: if URL is an image, show image; if link, make clickable
+function formatCellContent(text) {
+  if (!text) return "";
+
+  // If text is a direct image URL, embed it as an image
+  if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
+    return '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
+  }
+
+  // If text is a normal URL, make it clickable
   let urlRegex = /(\bhttps?:\/\/[^\s<>"]+[^\s<>.,;!"')\]])/g;
   return text.replace(urlRegex, function(url) {
     return '<a href="' + url + '" target="_blank">' + url + '</a>';
