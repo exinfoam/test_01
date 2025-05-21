@@ -35,12 +35,6 @@ function buildTable(columnHeader) {
 }
 
 function build_HTML_table(tbl, tableID, parentID, classID) {
-  // create an HTML table with w3.css class with the table tbl
-  // tbl should be a p5.Table object
-  // tableID is the selector ID you want to assign to the table
-  // parentID is the element ID under which you want to locate the table
-  // classID is the class to add to the <table>
-
   let cc = tbl.getColumnCount();
   let rc = tbl.getRowCount();
 
@@ -61,9 +55,17 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
     rh += "<tr>";
     for (let c = 0; c < cc; c++) {
       let cell = tbl.get(r, c);
+      let colName = columnNames[c];
       let websiteURL = websiteColIndex !== -1 ? tbl.get(r, websiteColIndex) : null;
-      let cellContent = formatCellContent(cell, columnNames[c], websiteURL);
-      rh += "<td>" + cellContent + "</td>";
+      let cellContent = formatCellContent(cell, colName, websiteURL);
+
+      // Apply special styling for "Further notes and links"
+      let cellStyle = "";
+      if (colName === "Further notes and links") {
+        cellStyle = ' style="max-width: 200px; word-wrap: break-word;"';
+      }
+
+      rh += "<td" + cellStyle + ">" + cellContent + "</td>";
     }
     rh += "</tr>";
   }
@@ -75,7 +77,6 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
   // t.parent(parentID); // Optional
 }
 
-// 🔗🖼️ Format cell content
 function formatCellContent(text, columnName, websiteURL) {
   if (!text) return "";
 
