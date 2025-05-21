@@ -1,52 +1,3 @@
-let tbl2;
-
-function preload() {
-  // my table is comma separated value "csv"
-  // and has a header specifying the columns labels
-  tbl2 = loadTable(
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwfmixeG6WSFgvk66e0CZM0m6X3OqXfkwslm6QczrbfeqDo9lWNi7_YFi3iYwmEYMmMRB6qoWsC-4F/pub?gid=0&single=true&output=csv',
-    'header',
-    'csv'
-  );
-}
-
-function setup() {
-  noCanvas();
-
-  // Add custom CSS to control link styles
-  const styleTag = createElement('style', `
-    a.img-link {
-      background-color: transparent !important;
-      padding: 0;
-      display: inline-block;
-    }
-    a.img-link:hover {
-      background-color: transparent !important;
-    }
-  `);
-  styleTag.parent(document.head || document.body);
-
-  // calling the function to display the p5.Table object as an HTML table
-  build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
-}
-
-function draw() {
-  // drawing something on the canvas so you can see it relative to the HTML table
-}
-
-function setValue(idTag, x) {
-  select(idTag).value(x);
-}
-
-function buildTable(columnHeader) {
-  // return an empty P5 table with headers but no data
-  let t = new p5.Table();
-  for (let c = 0; c < columnHeader.length; c++) {
-    t.addColumn(columnHeader[c]);
-  }
-  return t;
-}
-
 function build_HTML_table(tbl, tableID, parentID, classID) {
   let cc = tbl.getColumnCount();
   let rc = tbl.getRowCount();
@@ -55,14 +6,29 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
   let imageColIndex = columnNames.indexOf("Images");
   let websiteColIndex = columnNames.indexOf("Website");
 
-  // setup the table header HTML string
+  // Define proportional widths
+  const columnWidths = {
+    "Name": "8%",
+    "Images": "8%",
+    "Brief description": "18%",
+    "Notable features": "18%",
+    "Website": "10%",
+    "Design practices": "7%",
+    "Further notes and links": "10%",
+    "Dates active": "6%",
+    "Location": "5%"
+  };
+
+  // Table header
   let hh = "<tr>";
   for (let c = 0; c < cc; c++) {
-    hh += "<th>" + columnNames[c] + "</th>";
+    let colName = columnNames[c];
+    let width = columnWidths[colName] || "auto";
+    hh += `<th style="width:${width};">${colName}</th>`;
   }
   hh += "</tr>";
 
-  // setup the table row HTML string
+  // Table body
   let rh = "";
   for (let r = 0; r < rc; r++) {
     rh += "<tr>";
@@ -71,43 +37,22 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
       let colName = columnNames[c];
       let websiteURL = websiteColIndex !== -1 ? tbl.get(r, websiteColIndex) : null;
       let cellContent = formatCellContent(cell, colName, websiteURL);
+      let width = columnWidths[colName] || "auto";
 
-      // Apply special styling for "Further notes and links"
-      let cellStyle = "";
+      let style = `style="width:${width};`;
       if (colName === "Further notes and links") {
-        cellStyle = ' style="max-width: 200px; word-wrap: break-word;"';
+        style += " max-width:200px; word-wrap:break-word;";
       }
+      style += `"`;
 
-      rh += "<td" + cellStyle + ">" + cellContent + "</td>";
+      rh += `<td ${style}>${cellContent}</td>`;
     }
     rh += "</tr>";
   }
 
-  // create and insert the HTML table element
+  // Create and insert the HTML table element
   let t = createElement('table', hh + rh);
   t.addClass(classID);
   t.id(tableID);
-  // t.parent(parentID); // Optional
-}
-
-function formatCellContent(text, columnName, websiteURL) {
-  if (!text) return "";
-
-  // If it's an image URL
-  if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
-    let imgTag = '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
-
-    // If in "Images" column and website exists, wrap image in link
-    if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
-      return '<a href="' + websiteURL + '" target="_blank" class="img-link">' + imgTag + '</a>';
-    } else {
-      return imgTag;
-    }
-  }
-
-  // If it's a regular URL, make it clickable
-  let urlRegex = /(\bhttps?:\/\/[^\s<>"]+[^\s<>.,;!"')\]])/g;
-  return text.replace(urlRegex, function (url) {
-    return '<a href="' + url + '" target="_blank">' + url + '</a>';
-  });
+  // t.parent(parentID); // Uncomment if needed
 }
