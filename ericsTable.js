@@ -11,6 +11,7 @@ function preload() {
 function setup() {
   noCanvas();
 
+  // Add custom CSS for tag styling and links
   const styleTag = createElement('style', `
     a.img-link {
       background-color: transparent !important;
@@ -20,15 +21,26 @@ function setup() {
     a.img-link:hover {
       background-color: transparent !important;
     }
+    .tag {
+      background-color: #d1e8ff;
+      color: #004080;
+      padding: 2px 6px;
+      margin: 2px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .tag:hover {
+      background-color: #a8cfff;
+    }
   `);
   styleTag.parent(document.head || document.body);
 
   build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
 }
 
-function draw() {
-  // empty
-}
+function draw() {}
 
 function setValue(idTag, x) {
   select(idTag).value(x);
@@ -78,16 +90,17 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
   let t = createElement('table', hh + rh);
   t.addClass(classID);
   t.id(tableID);
-  // t.parent(parentID); // Optional
+  if (parentID) {
+    select('#' + parentID)?.child(t);
+  }
 }
 
 function formatCellContent(text, columnName, websiteURL) {
   if (!text) return "";
 
-  // If it's an image URL
+  // Handle image URLs
   if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
     let imgTag = '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
-
     if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
       return '<a href="' + websiteURL + '" target="_blank" class="img-link">' + imgTag + '</a>';
     } else {
@@ -95,14 +108,58 @@ function formatCellContent(text, columnName, websiteURL) {
     }
   }
 
+  // Special behavior for "Design practices" column – clickable tags
+  if (columnName === "Design practices") {
+    return text.split(',').map(tag => {
+      let cleanTag = tag.trim();
+      return `<span class="tag" onclick="filterByTag('${cleanTag}')">${cleanTag}</span>`;
+    }).join(" ");
+  }
+
+  // Convert line breaks (\n) to <br>
+  let safeText = text.replace(/\n/g, "<br>");
+
   // Make URLs clickable
   let urlRegex = /(\bhttps?:\/\/[^\s<>"]+[^\s<>.,;!"')\]])/g;
-  let formatted = text.replace(urlRegex, function (url) {
+  safeText = safeText.replace(urlRegex, function (url) {
     return '<a href="' + url + '" target="_blank">' + url + '</a>';
   });
 
-  // ✅ NEW: Replace newline characters with <br> for HTML display
-  formatted = formatted.replace(/\n/g, "<br>");
+  return safeText;
+}
 
-  return formatted;
+function filterByTag(tag) {
+  let filteredTable = new p5.Table();
+  let cc = tbl2.getColumnCount();
+  let rc = tbl2.getRowCount();
+
+  for (let c = 0; c < cc; c++) {
+    filteredTable.addColumn(tbl2.columns[c]);
+  }
+
+  let designIndex = tbl2.columns.indexOf("Design practices");
+
+  for (let r = 0; r < rc; r++) {
+    let cell = tbl2.get(r, designIndex);
+    if (cell && cell.includes(tag)) {
+      let newRow = filteredTable.addRow();
+      for (let c = 0; c < cc; c++) {
+        newRow.setString(c, tbl2.get(r, c));
+      }
+    }
+  }
+
+  select('#tblabc').remove();
+  build_HTML_table(filteredTable, "tblabc", "myTable2", "w3-table-all");
+
+  let existingReset = select('#resetButton');
+  if (existingReset) existingReset.remove();
+
+  let resetBtn = createButton('Reset Filter');
+  resetBtn.id('resetButton');
+  resetBtn.mousePressed(() => {
+    select('#tblabc').remove();
+    resetBtn.remove();
+    build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
+  });
 }
