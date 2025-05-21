@@ -8,7 +8,7 @@ html, body {
   text-align: left;
 }
 
-h2 {
+h2{
   font-size: 1.3rem;
   font-weight: 200;
 }
@@ -16,6 +16,7 @@ h2 {
 canvas {
   display: block;
 }
+
 
 a {
   color: #000000;
@@ -28,42 +29,33 @@ a:hover {
   color: #000000;
   text-decoration: none;
   background-color: #e3e7f5;
+
 }
 
 a:visited {
   text-decoration: none;
+
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  table-layout: fixed;
+table{
+  border-collapse:collapse;
+
 }
 
-/* Column width definitions */
-th:nth-child(1), td:nth-child(1) { width: 8%; }   /* Name */
-th:nth-child(2), td:nth-child(2) { width: 8%; }   /* Images */
-th:nth-child(3), td:nth-child(3) { width: 18%; }  /* Brief description */
-th:nth-child(4), td:nth-child(4) { width: 18%; }  /* Notable features */
-th:nth-child(5), td:nth-child(5) { width: 10%; }  /* Website */
-th:nth-child(6), td:nth-child(6) { width: 7%; }   /* Design practices */
-th:nth-child(7), td:nth-child(7) { width: 10%; }  /* Further notes and links */
-th:nth-child(8), td:nth-child(8) { width: 6%; }   /* Dates active */
-th:nth-child(9), td:nth-child(9) { width: 5%; }   /* Location */
-
-tr {
+tr{
   border-bottom: 1px solid #ececec;
+ 
 }
 
-th {
+th{
   color: #000000;
-  font-weight: 600;
+  font-weight: 600;   
   background-color: #ececec;
   padding-left: 5px;
   padding-right: 5px;
 }
 
-td {
+td{
   vertical-align: middle;
   border-right: 1px dashed #ececec;
   border-left: 1px dashed #ececec;
@@ -71,6 +63,5 @@ td {
   padding-right: 5px;
 }
 
-tr:hover {
-  background-color: rgb(15, 212, 130);
-}
+tr:hover {background-color: rgb(15, 212, 130);}
+
