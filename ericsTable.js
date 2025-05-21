@@ -13,6 +13,19 @@ function preload() {
 function setup() {
   noCanvas();
 
+  // Add custom CSS to control link styles
+  const styleTag = createElement('style', `
+    a.img-link {
+      background-color: transparent !important;
+      padding: 0;
+      display: inline-block;
+    }
+    a.img-link:hover {
+      background-color: transparent !important;
+    }
+  `);
+  styleTag.parent(document.head || document.body);
+
   // calling the function to display the p5.Table object as an HTML table
   build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
 }
@@ -86,7 +99,7 @@ function formatCellContent(text, columnName, websiteURL) {
 
     // If in "Images" column and website exists, wrap image in link
     if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
-      return '<a href="' + websiteURL + '" target="_blank">' + imgTag + '</a>';
+      return '<a href="' + websiteURL + '" target="_blank" class="img-link">' + imgTag + '</a>';
     } else {
       return imgTag;
     }
@@ -98,4 +111,3 @@ function formatCellContent(text, columnName, websiteURL) {
     return '<a href="' + url + '" target="_blank">' + url + '</a>';
   });
 }
-
