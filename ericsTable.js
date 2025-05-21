@@ -11,7 +11,7 @@ function preload() {
 function setup() {
   noCanvas();
 
-  // Add custom CSS for tag styling and links
+  // Add custom CSS for styling
   const styleTag = createElement('style', `
     a.img-link {
       background-color: transparent !important;
@@ -24,19 +24,28 @@ function setup() {
     .tag {
       background-color: #d1e8ff;
       color: #004080;
-      padding: 2px 6px;
-      margin: 2px;
+      padding: 4px 8px;
+      margin: 3px;
       border-radius: 4px;
-      font-size: 0.8em;
+      font-size: 0.85em;
       cursor: pointer;
       display: inline-block;
+      transition: background-color 0.2s;
     }
     .tag:hover {
       background-color: #a8cfff;
     }
+    #tagCloud {
+      margin-bottom: 20px;
+    }
   `);
   styleTag.parent(document.head || document.body);
 
+  // Container for tag cloud and table
+  let container = createDiv();
+  container.id('myTable2');
+
+  displayTagCloud(tbl2); // new
   build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
 }
 
@@ -157,9 +166,35 @@ function filterByTag(tag) {
 
   let resetBtn = createButton('Reset Filter');
   resetBtn.id('resetButton');
+  resetBtn.parent('myTable2');
   resetBtn.mousePressed(() => {
     select('#tblabc').remove();
     resetBtn.remove();
     build_HTML_table(tbl2, "tblabc", "myTable2", "w3-table-all");
+  });
+}
+
+function displayTagCloud(tbl) {
+  let tagSet = new Set();
+  let colIndex = tbl.columns.indexOf("Design practices");
+
+  for (let r = 0; r < tbl.getRowCount(); r++) {
+    let cell = tbl.get(r, colIndex);
+    if (cell) {
+      let tags = cell.split(',').map(t => t.trim());
+      tags.forEach(tag => tagSet.add(tag));
+    }
+  }
+
+  let sortedTags = Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  let tagCloud = createDiv('');
+  tagCloud.id('tagCloud');
+  tagCloud.parent('myTable2');
+
+  sortedTags.forEach(tag => {
+    let tagEl = createSpan(tag);
+    tagEl.class('tag');
+    tagEl.mousePressed(() => filterByTag(tag));
+    tagCloud.child(tagEl);
   });
 }
