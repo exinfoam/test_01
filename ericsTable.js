@@ -18,7 +18,7 @@ function setup() {
 }
 
 function draw() {
-  // drawing something on a the canvas so you can see it relative to the HTML table
+  // drawing something on the canvas so you can see it relative to the HTML table
 }
 
 function setValue(idTag, x) {
@@ -43,25 +43,26 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
 
   let cc = tbl.getColumnCount();
   let rc = tbl.getRowCount();
-  let rows = tbl.getRows();
 
-  print('col =' + cc + ' row = ' + rc);
-  print(tbl);
+  let columnNames = tbl.columns;
+  let imageColIndex = columnNames.indexOf("Images");
+  let websiteColIndex = columnNames.indexOf("Website");
 
   // setup the table header HTML string
-  let hh = "<tr>"; // header html
+  let hh = "<tr>";
   for (let c = 0; c < cc; c++) {
-    hh += "<th>" + tbl.columns[c] + "</th>";
+    hh += "<th>" + columnNames[c] + "</th>";
   }
   hh += "</tr>";
 
   // setup the table row HTML string
-  let rh = ""; // row html
+  let rh = "";
   for (let r = 0; r < rc; r++) {
     rh += "<tr>";
     for (let c = 0; c < cc; c++) {
       let cell = tbl.get(r, c);
-      let cellContent = formatCellContent(cell); // Apply formatting (link or image)
+      let websiteURL = websiteColIndex !== -1 ? tbl.get(r, websiteColIndex) : null;
+      let cellContent = formatCellContent(cell, columnNames[c], websiteURL);
       rh += "<td>" + cellContent + "</td>";
     }
     rh += "</tr>";
@@ -69,23 +70,31 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
 
   // create and insert the HTML table element
   let t = createElement('table', hh + rh);
-  t.addClass(classID); // add the table class from w3.css
-  t.id(tableID);       // sets the id for this <table>
-  // t.parent(parentID); // optional: attach to a specific parent element
+  t.addClass(classID);
+  t.id(tableID);
+  // t.parent(parentID); // Optional
 }
 
-// 🔗🖼️ Format cell content: if URL is an image, show image; if link, make clickable
-function formatCellContent(text) {
+// 🔗🖼️ Format cell content
+function formatCellContent(text, columnName, websiteURL) {
   if (!text) return "";
 
-  // If text is a direct image URL, embed it as an image
+  // If it's an image URL
   if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
-    return '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
+    let imgTag = '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
+
+    // If in "Images" column and website exists, wrap image in link
+    if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
+      return '<a href="' + websiteURL + '" target="_blank">' + imgTag + '</a>';
+    } else {
+      return imgTag;
+    }
   }
 
-  // If text is a normal URL, make it clickable
+  // If it's a regular URL, make it clickable
   let urlRegex = /(\bhttps?:\/\/[^\s<>"]+[^\s<>.,;!"')\]])/g;
-  return text.replace(urlRegex, function(url) {
+  return text.replace(urlRegex, function (url) {
     return '<a href="' + url + '" target="_blank">' + url + '</a>';
   });
 }
+
