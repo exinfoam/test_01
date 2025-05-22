@@ -109,7 +109,7 @@ function formatCellContent(text, columnName, websiteURL) {
 
   // Handle image URLs
   if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
-    let imgTag = '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
+    let imgTag = '<div style="text-align: center;"><img src="' + text + '" style="max-height: 100px; width: auto; height: auto; display: inline-block;"></div>';
     if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
       return '<a href="' + websiteURL + '" target="_blank" class="img-link">' + imgTag + '</a>';
     } else {
