@@ -89,7 +89,10 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
       let cellStyle = "";
       if (colName === "Further notes and links") {
         cellStyle = ' style="max-width: 200px; word-wrap: break-word;"';
+      } else if (colName === "Images") {
+        cellStyle = ' style="text-align: center;"';
       }
+
 
       rh += "<td" + cellStyle + ">" + cellContent + "</td>";
     }
