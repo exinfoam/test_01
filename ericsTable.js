@@ -91,8 +91,6 @@ function build_HTML_table(tbl, tableID, parentID, classID) {
         cellStyle = ' style="max-width: 200px; word-wrap: break-word;"';
       }
 
-
-
       rh += "<td" + cellStyle + ">" + cellContent + "</td>";
     }
     rh += "</tr>";
@@ -111,7 +109,17 @@ function formatCellContent(text, columnName, websiteURL) {
 
   // Handle image URLs
   if (text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|svg|webp)(\?.*)?$/i)) {
-    let imgTag = '<img src="' + text + '" style="max-height: 100px; width: auto; height: auto;">';
+    // UPDATED: Use images.weserv.nl proxy to resize images to max width 400px
+    // Extract hostname + path from URL (remove protocol)
+    let urlObj;
+    try {
+      urlObj = new URL(text);
+    } catch(e) {
+      return ""; // Invalid URL fallback
+    }
+    let proxiedURL = "https://images.weserv.nl/?url=" + urlObj.hostname + urlObj.pathname + "&w=400&output=webp&q=80";
+
+    let imgTag = '<img src="' + proxiedURL + '" style="max-height: 100px; width: auto; height: auto;">';
     if (columnName === "Images" && websiteURL && websiteURL.startsWith("http")) {
       return '<a href="' + websiteURL + '" target="_blank" class="img-link">' + imgTag + '</a>';
     } else {
